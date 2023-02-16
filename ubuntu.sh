@@ -1,98 +1,72 @@
 #!/bin/bash
 ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
 #change this according to your database details
-proxy_ip='157.245.200.58/tesla';
-open_Link='jhoelsoft.net/content';
 #Database Details
-dbhost='mysql2.blazingfast.io';
-dbuser='teslavpn_g5';
-dbpass='teslavpn_g5';
-dbname='teslavpn_g5';
-dbport='3306';
+dbhost='g5host.ststunnel.tk';
+dbuser='g5vpn';
+dbpass='g5vpn';
+dbname='g5vpn';
 dbport='3306';
 RED='\033[01;31m';
 RESET='\033[0m';
 GREEN='\033[01;32m';
 WHITE='\033[01;37m';
 YELLOW='\033[00;33m';
-fun_bar () {
-comando[0]="$1"
-comando[1]="$2"
- (
-[[ -e $HOME/fim ]] && rm $HOME/fim
-${comando[0]} -y > /dev/null 2>&1
-${comando[1]} -y > /dev/null 2>&1
-touch $HOME/fim
- ) > /dev/null 2>&1 &
- tput civis
-echo -ne "  \033[1;33mOPENVPN | STUNNEL \033[1;37m- \033[1;33m["
-while true; do
-   for((i=0; i<18; i++)); do
-   echo -ne "\033[1;31m#"
-   sleep 0.1s
-   done
-   [[ -e $HOME/fim ]] && rm $HOME/fim && break
-   echo -e "\033[1;33m]"
-   sleep 1s
-   tput cuu1
-   tput dl1
-   echo -ne "  \033[1;33mOPENVPN | STUNNEL \033[1;37m- \033[1;33m["
-done
-echo -e "\033[1;33m]\033[1;37m -\033[1;32m INSTALLED !\033[1;37m"
-tput cnorm
+install_require()
+{
+  clear
+  echo "Updating your system."
+  {
+    apt-get -o Acquire::ForceIPv4=true update
+  } &>/dev/null
+  clear
+  echo "Installing dependencies."
+  {
+    apt-get -o Acquire::ForceIPv4=true install openvpn easy-rsa -y
+    apt-get -o Acquire::ForceIPv4=true install mariadb-server stunnel4 openvpn -y
+    apt-get -o Acquire::ForceIPv4=true install net-tools screen sudo mysql-client nano fail2ban unzip apache2 build-essential curl build-essential libwrap0-dev libpam0g-dev libdbus-1-dev libreadline-dev libnl-route-3-dev libpcl1-dev libopts25-dev autogen libgnutls28-dev libseccomp-dev libhttp-parser-dev php libapache2-mod-php -y
+    apt-get -o Acquire::ForceIPv4=true install netcat lsof php php-mysqli php-mysql php-gd php-mbstring python -y  > /dev/null 2>&1
+ } &>/dev/null
 }
 
+service_start ()
+{
+clear
+echo "Restarting service."
+{
+service apache2 restart
+update-rc.d stunnel4 enable
+service stunnel4 restart
+update-rc.d openvpn enable
+update-rc.d apache2 enable
+service apache2 restart
+service openvpn restart
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+update-rc.d squid enable
+service squid restart
 
-fun_bar2 () {
-comando[0]="$1"
-comando[1]="$2"
- (
-[[ -e $HOME/fim ]] && rm $HOME/fim
-${comando[0]} -y > /dev/null 2>&1
-${comando[1]} -y > /dev/null 2>&1
-touch $HOME/fim
- ) > /dev/null 2>&1 &
- tput civis
-echo -ne "  \033[1;33mSTARTING SERVICES \033[1;37m- \033[1;33m["
-while true; do
-   for((i=0; i<18; i++)); do
-   echo -ne "\033[1;31m#"
-   sleep 0.1s
-   done
-   [[ -e $HOME/fim ]] && rm $HOME/fim && break
-   echo -e "\033[1;33m]"
-   sleep 1s
-   tput cuu1
-   tput dl1
-   echo -ne "  \033[1;33mSTARTING SERVICES \033[1;37m- \033[1;33m["
-done
-echo -e "\033[1;33m]\033[1;37m -\033[1;32m ALL SERVICE STARTED !\033[1;37m"
-tput cnorm
+sudo apt-get autoremove -y > /dev/null 2>&1
+sudo apt-get clean > /dev/null 2>&1
+history -c
+cd /root || exit
+rm -f /root/installer.sh
+rm -rf *sh
+} &>/dev/null
 }
-show_menu () {
-echo -e "                $GREEN
-
-|  .oooooo.                   .o8            ooooooooo.   oooo       
-| d8P'  'Y8b                 .888             '888   'Y88. '888       
-|888           .ooooo.   .oooo888   .ooooo.   888   .d88'  888 .oo.  
-|888          d88' '88b d88' '888  d88' '88b  888ooo88P'   888P'Y88b 
-|888          888   888 888   888  888ooo888  888          888   888 
-|'88b    ooo  888   888 888   888  888    .o  888          888   888 
-| 'Y8bood8P'  'Y8bod8P' 'Y8bod88P' 'Y8bod8P' o888o        o888o o888o $RESET"
- 
- echo -e "                $RED
-|     ██╗██╗  ██╗ ██████╗ ███████╗██╗         ███████╗███╗   ███╗
-|     ██║██║  ██║██╔═══██╗██╔════╝██║         ██╔════╝████╗ ████║
-|     ██║███████║██║   ██║█████╗  ██║         █████╗  ██╔████╔██║
-|██   ██║██╔══██║██║   ██║██╔══╝  ██║         ██╔══╝  ██║╚██╔╝██║
-|╚█████╔╝██║  ██║╚██████╔╝███████╗███████╗    ███████╗██║ ╚═╝ ██║
-| ╚════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝    ╚══════╝╚═╝     ╚═╝
-                CENTOS7 SETUP by JhoelEm 
-$RESET"
-}
-services () {
-##certificates
-cacert='-----BEGIN CERTIFICATE-----
+install()
+{
+clear
+echo "Installing"
+{
+mkdir /etc/openvpn/script
+mkdir /etc/openvpn/log
+mkdir /etc/openvpn/keys
+mkdir /var/www/html/stat
+sudo touch /var/www/html/stat/tcp.txt
+sudo touch /var/www/html/stat/udp.txt
+# Making File to the script folders and keys
+cat << EOF > /etc/openvpn/keys/ca.crt
+-----BEGIN CERTIFICATE-----
 MIIE5TCCA82gAwIBAgIJAP0GLynOqm38MA0GCSqGSIb3DQEBCwUAMIGnMQswCQYD
 VQQGEwJQSDERMA8GA1UECBMIQmF0YW5nYXMxETAPBgNVBAcTCEJhdGFuZ2FzMRIw
 EAYDVQQKEwlTYXZhZ2VWUE4xEjAQBgNVBAsTCVNhdmFnZVZQTjEWMBQGA1UEAxMN
@@ -120,8 +94,11 @@ EUtU6SZ1AXO6l6b/RTXymRrEInCPfbGsEnucnG7naOpBaNRXmpiMppOwzR42sd6I
 QOvXkj2e8v9tQ05cffjexks+rfb/d80+1nfkv0HCLWxcdU8yOUqVryhdZLB6Rhw/
 crldSHwrGWN+qptpFD160iJLIv3p5vWwUAgRoRai9iHuJMOHn4aDX0N8tbCfS+R5
 qn8GWiHaXEu8
------END CERTIFICATE-----';
-servercert='Certificate:
+-----END CERTIFICATE-----
+EOF
+
+cat << EOF > /etc/openvpn/keys/server.crt
+Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number: 1 (0x1)
@@ -220,8 +197,11 @@ vq5vHJOLE1UNsVEwwvQDyanPu61gcOwyHuV01U0rXgJzKLCEKPRsk0Wh+DxYkTgh
 e7KP/iZMGHKjE3lGuEOMzFwDfCCKUSWL0ICorjNcGSD2qQI5R0IdN8bsn26AW2EL
 U78mS221ppgh4K1COn0/yQCjYUx24EU2C35xODdPc6lvv3p3BI0ny+PUEfTDxYXC
 HYqfO9pDl43zPjBRtK0rZQRY85V/I7I6+L18+A==
------END CERTIFICATE-----';
-serverkey='-----BEGIN PRIVATE KEY-----
+-----END CERTIFICATE-----
+EOF
+
+cat << EOF > /etc/openvpn/keys/server.key
+-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC2qbnm+RmFJLpr
 3H6y1CwBRib6PkHuDLkYJ5k0J2HrT8uDwAtDJwVTpbk8WorFfi5yHfmDl0S1ACE2
 11EnvrfQDCwJOFKg4Ilvyw4RN9l8Q/6xJcEveCXBoBXJHTW2HTPp5nWDSzBUpE71
@@ -248,51 +228,30 @@ dTQ7MTW+m4iHRuHP3nFwQ6NeN5kLXat7Wj2AwXQCuQKBgESdvXETE6Oy3GVeO1zd
 tDlYxpA620daYaNo9MDpV49m89Lt8Maou080+gEJDrqqhyiaEQStrvz31mXIA+w7
 YTX1gKAF4qCXy3IKLqN3umdpEYkV2MVEfXlUE6aZZMogta9F5cne3CNDyHzq/RvS
 l9rNm+ntgV3+QioNbRWhG9fb
------END PRIVATE KEY-----';
-dh='-----BEGIN DH PARAMETERS-----
+-----END PRIVATE KEY-----
+EOF
+
+cat << EOF > /etc/openvpn/keys/dh2048.pem
+-----BEGIN DH PARAMETERS-----
 MIIBCAKCAQEAohzwXz9fsjw+G9Q14qINNOhZnTt/b30zzJYm4o2NIzAngM6E6GPm
 N5USUt0grZw6h3VP9LyqQoGi/bHFz33YFG5lgDF8FAASEh07/leF7s0ohhK8pspC
 JVD+mRatwBrIImXUpJvYI2pXKxtCOnDa2FFjAOHKixiAXqVcmJRwNaSklQcrpXdn
 /09cr0rbFoovn+f1agly4FxYYs7P0XkvSHm3gVW/mhAUr1hvZlbBaWFSVUdgcVOi
 FXQ/AVkvxYaO8pFI2Vh+CNMk7Vvi8d3DTayvoL2HTgFi+OIEbiiE/Nzryu+jDGc7
 79FkBHWOa/7eD2nFrHScUJcwWiSevPQjQwIBAg==
------END DH PARAMETERS-----';
-
-
-
-apt-get update -y
-#sudo timedatectl set-timezone Asia/ Manila
-timedatectl
-apt-get install openvpn easy-rsa -y
-apt-get install net-tools screen sudo mysql-client nano fail2ban unzip apache2 build-essential curl build-essential libwrap0-dev libpam0g-dev libdbus-1-dev libreadline-dev libnl-route-3-dev libpcl1-dev libopts25-dev autogen libgnutls28-dev libseccomp-dev libhttp-parser-dev php libapache2-mod-php -y
-
-MYIP=$(wget -qO- ipv4.icanhazip.com);
-# Making script folders and keys
-mkdir /etc/openvpn/script
-mkdir /etc/openvpn/log
-mkdir /etc/openvpn/keys
-mkdir /var/www/html/stat
-touch /var/www/html/stat/tcp.txt
-touch /var/www/html/stat/udp.txt
-
-# Making File to the script folders and keys
-cat << EOF > /etc/openvpn/keys/ca.crt
-$cacert
-EOF
-
-cat << EOF > /etc/openvpn/keys/server.crt
-$servercert
-EOF
-
-cat << EOF > /etc/openvpn/keys/server.key
-$serverkey
-EOF
-
-cat << EOF > /etc/openvpn/keys/dh2048.pem
-$dh
+-----END DH PARAMETERS-----
 EOF
 
 
+/bin/cat <<"EOM" >/etc/issuer
+#!/bin/bash
+##Dababase Server
+HOST1='mysql2.blazingfast.io'
+USER1='gabbyvpn_g5'
+PASS1='gabbyvpn_g5'
+DB1='gabbyvpn_g5'
+EOM
+chmod +x /etc/issuer
 cat << EOF > /etc/openvpn/script/config.sh
 #!/bin/bash
 ##Dababase Server
@@ -370,30 +329,31 @@ down /etc/openvpn/update-resolv-conf
 EOF
 
 #client-connect file
-cat <<'EOF' >/etc/openvpn/login/connect.sh
+cat <<'EOF' >/etc/openvpn/script/connect.sh
 #!/bin/bash
 
 tm="$(date +%s)"
 dt="$(date +'%Y-%m-%d %H:%M:%S')"
 timestamp="$(date +'%FT%TZ')"
 
-. /etc/openvpn/login/config.sh
+. /etc/openvpn/script/config.sh
 
 ##set status online to user connected
-mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_active='1' WHERE user_name='$common_name' "
+mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_active='1' WHERE username='$common_name' "
 EOF
 
 #TCP client-disconnect file
-cat <<'EOF' >/etc/openvpn/login/disconnect.sh
+cat <<'EOF' >/etc/openvpn/script/disconnect.sh
 #!/bin/bash
 tm="$(date +%s)"
 dt="$(date +'%Y-%m-%d %H:%M:%S')"
 timestamp="$(date +'%FT%TZ')"
 
-. /etc/openvpn/login/config.sh
+. /etc/openvpn/script/config.sh
 
-mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_active='0' WHERE user_name='$common_name' "
+mysql -u $USER -p$PASS -D $DB -h $HOST -e "UPDATE users SET is_active='0' WHERE username='$common_name' "
 EOF
+
 
 echo 'fs.file-max = 51200
 net.core.rmem_max = 67108864
@@ -443,8 +403,7 @@ useradd -p $(openssl passwd -1 codeph) jhoe -ou 0 -g 0
 sudo apt-get install iptables-persistent -y
 iptables-save > /etc/iptables/rules.v4 
 ip6tables-save > /etc/iptables/rules.v6
-
-apt-get install squid -y
+sudo apt-get install squid -y
 echo "http_port 8080
 http_port 8989
 acl to_vpn dst `curl ipinfo.io/ip`
@@ -481,10 +440,11 @@ request_header_access User-Agent allow all
 request_header_access Cookie allow all
 request_header_access All deny all 
 http_access deny all"| sudo tee /etc/squid/squid.conf
-chmod -R 755 /etc/openvpn
+sudo chmod -R 755 /etc/openvpn
 cd /var/www/html/stat
-chmod 775 *
-apt-get install stunnel4 -y
+sudo chmod 775 *
+cd
+sudo apt-get install stunnel4 -y
 sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 cat <<EOF >/etc/stunnel/stunnel.pem
 -----BEGIN RSA PRIVATE KEY-----
@@ -551,9 +511,8 @@ client = no
 connect = 127.0.0.1:1194
 accept = 443
 EOF
-chmod 600 /etc/stunnel/stunnel.pem
+sudo chmod 600 /etc/stunnel/stunnel.pem
 
-apt-get install netcat lsof php php-mysqli php-mysql php-gd php-mbstring python -y
 cat << \websock > /usr/local/sbin/proxy.py
 #!/usr/bin/env python3
 # encoding: utf-8
@@ -841,17 +800,42 @@ else
 fi
 
 autostart
-
-chmod +x /root/auto
+sudo chmod +x /root/auto
 /root/auto;
 crontab -r
 echo "SHELL=/bin/bash
 * * * * * /bin/bash /root/auto >/dev/null 2>&1" | crontab -
+cat <<"EOF" >/var/www/html/stat.php
+<?php
+header('Content-Type: application/json');
+$services = array();
+$timeout  = "1";
+$services[] = array("port" => "80","service" => "websocket","ip" => "");
+foreach ($services as $service) {
+    if ($service['ip'] == "") {
+        $service['ip'] = "localhost";
+    }
+    $return_arr["SERVICE"] = $service['service'];
+    $return_arr["PORT"] = $service['port']; 
+    $fp = @fsockopen($service['ip'], $service['port'], $errno, $errstr, $timeout);
+    if (!$fp) {
+	 $return_arr["STATUS"] = 'offline';
+        $data .= " Offline";
+        //fclose($fp);
+    } else {
+      $return_arr["STATUS"] = 'online';
+        fclose($fp);
+    }
+}
+echo json_encode($return_arr);
+?>
+EOF
+sudo chmod +x /var/www/html/stat.php
 /bin/cat <<"EOM" >/var/www/html/client.ovpn
 client
 dev tun
 proto tcp
-remote $MYIP 1194
+remote 178.128.30.64 1194
 remote-cert-tls server
 connect-retry infinite
 resolv-retry infinite
@@ -861,16 +845,19 @@ mssfix 1460
 persist-key
 persist-tun
 auth-user-pass
-auth none
-auth-nocache
 cipher none
 script-security 3
+keepalive 10 60
 cipher AES-128-CBC
 keysize 0
 setenv CLIENT_CERT 0
 reneg-sec 0
 verb 3
-# OVPN_ACCESS_SERVER_PROFILE=Tknetwork
+http-proxy 178.128.30.64 8080
+http-proxy-option CUSTOM-HEADER Host: www.sg.mpl.mobilelegends.com
+http-proxy-option CUSTOM-HEADER X-Online-Host: www.sg.mpl.mobilelegends.com
+http-proxy-option CUSTOM-HEADER X-Forward-Host: www.sg.mpl.mobilelegends.com
+http-proxy-option CUSTOM-HEADER Connection: Keep-Alive
 <ca>
 -----BEGIN CERTIFICATE-----
 MIIE5TCCA82gAwIBAgIJAP0GLynOqm38MA0GCSqGSIb3DQEBCwUAMIGnMQswCQYD
@@ -947,106 +934,39 @@ EOM
 </html>
 EOM
 sed -i 's/Listen 80/Listen 81/g' /etc/apache2/ports.conf
+/bin/cat <<"EOM" >/etc/openvpn/script/login.sh
+#!/bin/bash
+. /etc/openvpn/script/config.sh
+. /etc/issuer
+tm="$(date +%s)"
+dt="$(date +'%Y-%m-%d %H:%M:%S')"
+HOST3='mysql2.blazingfast.io'
+USER3='gabbyvpn_2023'
+PASS3='gabbyvpn_2023'
+DB3='gabbyvpn_2023'
+PRE="username='$username' AND userpass='$password' AND freeze='no' AND duration > 0"
+VIP="username='$username' AND userpass='$password' AND freeze='no' AND vip_duration > 0"
+PRE1="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND duration > 0"
+VIP1="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND vip_duration > 0"
+PRIV1="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND private_duration > 0"
+Query1="SELECT user_name FROM users WHERE $PRE1 OR $VIP1 OR $PRIV1"
+Query="SELECT username FROM users WHERE xxxx"
+#auth1=`mysql -u $USER -p$PASS -D $DB -h $HOST -sN -e "$Query"`
+auth2=`mysql -u $USER1 -p$PASS1 -D $DB1 -h $HOST1 -sN -e "$Query1"`
+auth3=`mysql -u $USER3 -p$PASS3 -D $DB3 -h $HOST3 -sN -e "$Query1"`
+#auth2
+if [ "$auth2" == "$username" ] || [ "$auth3" == "$username" ]; then
+echo "user : $username" && echo 'authentication ok.' && exit 0
+fi
+if [ "$auth2" != "$username" ] || [ "$auth3" != "$username" ]; then
+echo 'authentication failed.'; 
+exit 1
+fi
+EOM
+chmod 755 /etc/openvpn/script/login.sh
+}&>/dev/null
 }
 
-service_start () {
-service apache2 restart
-update-rc.d stunnel4 enable
-service stunnel4 restart
-update-rc.d openvpn enable
-update-rc.d apache2 enable
-service apache2 restart
-service openvpn restart
-cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
-update-rc.d squid enable
-
-sudo apt-get autoremove -y > /dev/null 2>&1
-sudo apt-get clean > /dev/null 2>&1
-history -c
-cd /root || exit
-rm -f /root/installer.sh
-}
-
-
-#Selecting UserType
-clear
-show_menu
-echo -e "                $GREEN Type of your Server  $RESET"
-PS3='Choose or Type a Plan: '
-options=("Premium" "VIP" "Private" "Quit")
-select opt in "${options[@]}"; do
-case "$opt,$REPLY" in
-Premium,*|*,Premium) 
-echo "";
-clear
-show_menu
-fun_bar 'services'
-fun_bar2 'service_start'
-/bin/cat <<"EOM" >/etc/openvpn/script/login.sh
-#!/bin/bash
-. /etc/openvpn/script/config.sh
-tm="$(date +%s)"
-dt="$(date +'%Y-%m-%d %H:%M:%S')"
-PRE="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND duration > 0"
-VIP="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND vip_duration > 0"
-PRIV="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND private_duration > 0"
-Query="SELECT user_name FROM users WHERE $PRE OR $VIP OR $PRIV"
-user_name=`mysql -u $USER -p$PASS -D $DB -h $HOST -sN -e "$Query"`
-[ "$user_name" != '' ] && [ "$user_name" = "$username" ] && echo "user : $username" && echo 'authentication ok.' && exit 0 || echo 'authentication failed.'; exit 1
-EOM
-chmod 755 /etc/openvpn/script/login.sh
-echo -e "                $GREEN 1) PREMIUM Done Installing$RESET";
-break ;;
-VIP,*|*,VIP) 
-echo "";
-clear
-show_menu
-fun_bar 'services'
-fun_bar2 'service_start'
-/bin/cat <<"EOM" >/etc/openvpn/script/login.sh
-#!/bin/bash
-. /etc/openvpn/script/config.sh
-tm="$(date +%s)"
-dt="$(date +'%Y-%m-%d %H:%M:%S')"
-PRE="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND duration > 0"
-VIP="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND vip_duration > 0"
-PRIV="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND private_duration > 0"
-Query="SELECT user_name FROM users WHERE $VIP OR $PRIV"
-user_name=`mysql -u $USER -p$PASS -D $DB -h $HOST -sN -e "$Query"`
-[ "$user_name" != '' ] && [ "$user_name" = "$username" ] && echo "user : $username" && echo 'authentication ok.' && exit 0 || echo 'authentication failed.'; exit 1
-EOM
-chmod 755 /etc/openvpn/script/login.sh
-echo -e "                $GREEN 2) VIP Done Installing$RESET";
-break ;;
- 
-Private,*|*,Private) 
-echo "";
-clear
-show_menu
-fun_bar 'services'
-fun_bar2 'service_start'
-/bin/cat <<"EOM" >/etc/openvpn/script/login.sh
-#!/bin/bash
-. /etc/openvpn/script/config.sh
-tm="$(date +%s)"
-dt="$(date +'%Y-%m-%d %H:%M:%S')"
-PRE="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND duration > 0"
-VIP="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND vip_duration > 0"
-PRIV="user_name='$username' AND auth_vpn=md5('$password') AND status='live' AND is_freeze=0 AND is_ban=0 AND private_duration > 0"
-Query="SELECT user_name FROM users WHERE $PRIV"
-user_name=`mysql -u $USER -p$PASS -D $DB -h $HOST -sN -e "$Query"`
-[ "$user_name" != '' ] && [ "$user_name" = "$username" ] && echo "user : $username" && echo 'authentication ok.' && exit 0 || echo 'authentication failed.'; exit 1
-EOM
-chmod 755 /etc/openvpn/script/login.sh
-echo -e "                $GREEN 3) PRIVATE Done Installing$RESET";
-
-break ;;
-
-Quit,*|*,Quit) echo -e " $RED   Installation Cancelled!$RESET";
-echo -e "                $RED   Rebuild your vps and correct the process.$RESET";
-exit;
-break ;; *)
-echo -e "                $RED   Invalid: Just choose what you want and type the number then hit enter$RESET";
-esac
-done
-rm -rf *sh
+install_require
+install
+service_start
