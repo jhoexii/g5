@@ -942,7 +942,7 @@ tm="$(date +%s)"
 dt="$(date +'%Y-%m-%d %H:%M:%S')"
 HOST3='mysql2.blazingfast.io'
 USER3='gabbyvpn_2023'
-PASS3='gabbyvpn_2023'
+PASS3='gabbyvpn_1234'
 DB3='gabbyvpn_2023'
 PRE="username='$username' AND userpass='$password' AND freeze='no' AND duration > 0"
 VIP="username='$username' AND userpass='$password' AND freeze='no' AND vip_duration > 0"
